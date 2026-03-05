@@ -1,42 +1,68 @@
 name: "Build & Release"
 
 on:
-    push:
-        branches:
-            - main
-        paths: 
-          - '**.dart'
-          - '**.yaml'
-          - '**.yml'
-          - '**.sh'
-          - '**.lock'
+  push:
+    branches:
+      - auto_build
+  pull_request:
+    branches:
+      - auto_build
+
+permissions:
+  contents: write
 
 jobs:
-    build:
-        runs-on: windows-latest
-        steps:
-            - uses: actions/checkout@v4
+  main:
+    runs-on: windows-latest
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
 
-            - uses: subosito/flutter-action@v2
-              with:
-                flutter-version: "3.35.1"
-                channel: 'stable'
-                cache: true
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: "17"
 
-            - name: Build
-              run: sh ./scripts/auto.sh
-              shell: bash
-            
-            - name: Compress
-              uses: vimtor/action-zip@v1.2
-              with:
-                files: dist-Release/
-                dest: release.zip
-    
-            - name: Release
-              uses: ncipollo/release-action@v1
-              with: 
-                artifacts: "release.zip"
-                tag: v1.2.${{ github.run_number }}
-                name: "v1.2 # ${{ github.run_number }}"
-                token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Build Windows App
+        run: flutter build windows
+
+      - name: Upload Windows Runner artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-runner
+          path: build\windows\x64\runner\Release
+
+      - name: Build iss script
+        run: dart run inno_bundle:build --no-app --release --no-installer
+
+      - name: Upload Inno script artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-iss
+          path: build\windows\x64\installer\Release
+
+      - name: Output config into github output
+        id: envs
+        run: echo $(dart run inno_bundle:build --envs --no-hf) | Out-File -FilePath $Env:GITHUB_OUTPUT -Encoding utf8 -Append
+
+      - name: Build installer
+        uses: Minionguyjpro/Inno-Setup-Action@v1.2.2
+        with:
+          path: ./build/windows/x64/installer/Release/inno-script.iss
+
+      - name: Release installer
+        uses: softprops/action-gh-release@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          files: |
+            ./build/windows/x64/installer/Release/${{ steps.envs.outputs.APP_NAME_CAMEL_CASE }}-x86_64-${{ steps.envs.outputs.APP_VERSION }}-Installer.exe
+          name: "${{ steps.envs.outputs.APP_VERSION }}_${{ github.run_id }}"
+          target_commitish: "${{ github.sha }}"
+          tag_name: "v${{ steps.envs.outputs.APP_VERSION }}_${{ github.run_id }}"

@@ -62,6 +62,7 @@ dev_dependencies:
   flutter_lints: ^6.0.0
   mockito: ^5.5.1
   build_runner: ^2.10.4
+  inno_bundle: ^0.11.2
 
 flutter:
   uses-material-design: true
@@ -94,3 +95,12 @@ flutter_launcher_icons:
     generate: true
   web:
     generate: true
+
+inno_bundle:
+  id: f87ed72b-edb5-4fd6-8f6f-158be6332211
+  publisher: YCY
+  name: Elastic Dashboard for 8020
+  admin: auto
+  languages:
+    - english
+  installer_icon: assets/icon.ico

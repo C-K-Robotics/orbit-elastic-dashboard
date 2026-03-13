@@ -79,7 +79,7 @@ class FieldWidgetModel extends MultiTopicNTWidgetModel {
   final double _otherObjectSize = 0.55;
   final double _trajectoryPointSize = 0.08;
   final double _visionMarkerSize = 15.0;
-  final double _gamePieceMarkerSize = 15.0;
+  final double _gamePieceMarkerSize = 5.0;
 
   Size? widgetSize;
 

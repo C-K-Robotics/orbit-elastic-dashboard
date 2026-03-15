@@ -27,7 +27,7 @@ import 'package:elastic_dashboard/services/elasticlib_listener.dart';
 import 'package:elastic_dashboard/services/hotkey_manager.dart';
 import 'package:elastic_dashboard/services/ip_address_util.dart';
 import 'package:elastic_dashboard/services/log.dart';
-import 'package:elastic_dashboard/services/nt4_client.dart';
+
 import 'package:elastic_dashboard/services/nt_connection.dart';
 import 'package:elastic_dashboard/services/settings.dart';
 import 'package:elastic_dashboard/services/update_checker.dart';
@@ -596,54 +596,54 @@ class _DashboardPageState extends State<DashboardPage>
       ),
       callback: model.exportLayout,
     );
-    // Reset Gyro (Ctrl + G)
-    hotKeyManager.register(
-      HotKey(
-        LogicalKeyboardKey.keyG,
-        modifiers: [KeyModifier.control],
-      ),
-      callback: () => _addTrueSample('/Match/Commander/ResetGyro'),
-    );
-    // Reset Convey Faults (Ctrl + W)
-    hotKeyManager.register(
-      HotKey(
-        LogicalKeyboardKey.keyW,
-        modifiers: [KeyModifier.control],
-      ),
-      callback: () => _addTrueSample('/Match/Commander/ResetConveyFaults'),
-    );
-    // Reset Swerver Heading (Ctrl + Z)
-    hotKeyManager.register(
-      HotKey(
-        LogicalKeyboardKey.keyZ,
-        modifiers: [KeyModifier.control],
-      ),
-      callback: () => _addTrueSample('/Match/Commander/ResetSwerveHeading'),
-    );
-    // Reset Intake Opener (Ctrl + A)
-    hotKeyManager.register(
-      HotKey(
-        LogicalKeyboardKey.keyA,
-        modifiers: [KeyModifier.control],
-      ),
-      callback: () => _addTrueSample('/Match/Commander/ResetIntakeOpener'),
-    );
-    // Reset Turret (Ctrl + T)
-    hotKeyManager.register(
-      HotKey(
-        LogicalKeyboardKey.keyT,
-        modifiers: [KeyModifier.control],
-      ),
-      callback: () => _addTrueSample('/Match/Commander/ResetTurret'),
-    );
-    // Reset Canopy (Ctrl + C)
-    hotKeyManager.register(
-      HotKey(
-        LogicalKeyboardKey.keyC,
-        modifiers: [KeyModifier.control],
-      ),
-      callback: () => _addTrueSample('/Match/Commander/ResetCanopy'),
-    );
+    // // Reset Gyro (Ctrl + G)
+    // hotKeyManager.register(
+    //   HotKey(
+    //     LogicalKeyboardKey.keyG,
+    //     modifiers: [KeyModifier.control],
+    //   ),
+    //   callback: () => _addTrueSample('/Match/Commander/ResetGyro'),
+    // );
+    // // Reset Convey Faults (Ctrl + W)
+    // hotKeyManager.register(
+    //   HotKey(
+    //     LogicalKeyboardKey.keyW,
+    //     modifiers: [KeyModifier.control],
+    //   ),
+    //   callback: () => _addTrueSample('/Match/Commander/ResetConveyFaults'),
+    // );
+    // // Reset Swerver Heading (Ctrl + Z)
+    // hotKeyManager.register(
+    //   HotKey(
+    //     LogicalKeyboardKey.keyZ,
+    //     modifiers: [KeyModifier.control],
+    //   ),
+    //   callback: () => _addTrueSample('/Match/Commander/ResetSwerveHeading'),
+    // );
+    // // Reset Intake Opener (Ctrl + A)
+    // hotKeyManager.register(
+    //   HotKey(
+    //     LogicalKeyboardKey.keyA,
+    //     modifiers: [KeyModifier.control],
+    //   ),
+    //   callback: () => _addTrueSample('/Match/Commander/ResetIntakeOpener'),
+    // );
+    // // Reset Turret (Ctrl + T)
+    // hotKeyManager.register(
+    //   HotKey(
+    //     LogicalKeyboardKey.keyT,
+    //     modifiers: [KeyModifier.control],
+    //   ),
+    //   callback: () => _addTrueSample('/Match/Commander/ResetTurret'),
+    // );
+    // // Reset Canopy (Ctrl + C)
+    // hotKeyManager.register(
+    //   HotKey(
+    //     LogicalKeyboardKey.keyC,
+    //     modifiers: [KeyModifier.control],
+    //   ),
+    //   callback: () => _addTrueSample('/Match/Commander/ResetCanopy'),
+    // );
     // Download from robot (Ctrl + D)
     hotKeyManager.register(
       HotKey(LogicalKeyboardKey.keyD, modifiers: [KeyModifier.control]),
@@ -809,15 +809,25 @@ class _DashboardPageState extends State<DashboardPage>
         widget.model.changeIPAddressMode(IPAddressMode.localhost);
       },
     );
+    // Toggle Tabs (Ctrl + H)
+    hotKeyManager.register(
+      HotKey(LogicalKeyboardKey.keyH, modifiers: [KeyModifier.control]),
+      callback: () {
+        bool currentVal =
+            preferences.getBool(PrefKeys.showTabs) ?? Defaults.showTabs;
+        preferences.setBool(PrefKeys.showTabs, !currentVal);
+        setState(() {});
+      },
+    );
   }
 
-  void _addTrueSample(String topicName) {
-    NT4Topic? topic = model.ntConnection.getTopicFromName(topicName);
-    if (topic != null) {
-      model.ntConnection.publishTopic(topic);
-      model.ntConnection.updateDataFromTopic(topic, true);
-    }
-  }
+  // void _addTrueSample(String topicName) {
+  //   NT4Topic? topic = model.ntConnection.getTopicFromName(topicName);
+  //   if (topic != null) {
+  //     model.ntConnection.publishTopic(topic);
+  //     model.ntConnection.updateDataFromTopic(topic, true);
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -1096,11 +1106,13 @@ class _DashboardPageState extends State<DashboardPage>
     }
 
     return Scaffold(
-      appBar: CustomAppBar(
-        titleText: appTitle,
-        onWindowClose: onWindowClose,
-        leading: menuBar,
-      ),
+      appBar: (preferences.getBool(PrefKeys.showTabs) ?? Defaults.showTabs)
+          ? CustomAppBar(
+              titleText: appTitle,
+              onWindowClose: onWindowClose,
+              leading: menuBar,
+            )
+          : null,
       body: Focus(
         autofocus: true,
         canRequestFocus: true,
@@ -1222,6 +1234,12 @@ class _DashboardPageState extends State<DashboardPage>
               preferences: preferences,
               footerStyle: footerStyle,
               windowWidth: windowWidth,
+              onToggleTabs: () {
+                bool current =
+                    preferences.getBool(PrefKeys.showTabs) ?? Defaults.showTabs;
+                preferences.setBool(PrefKeys.showTabs, !current);
+                setState(() {});
+              },
             ),
           ],
         ),

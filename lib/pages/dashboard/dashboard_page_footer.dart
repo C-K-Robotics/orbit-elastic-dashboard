@@ -10,6 +10,7 @@ class DashboardPageFooter extends StatelessWidget {
   final SharedPreferences preferences;
   final TextStyle? footerStyle;
   final double windowWidth;
+  final VoidCallback? onToggleTabs;
 
   const DashboardPageFooter({
     super.key,
@@ -17,6 +18,7 @@ class DashboardPageFooter extends StatelessWidget {
     required this.preferences,
     required this.footerStyle,
     required this.windowWidth,
+    this.onToggleTabs,
   });
 
   @override
@@ -71,12 +73,36 @@ class DashboardPageFooter extends StatelessWidget {
                 ),
               Align(
                 alignment: Alignment.centerLeft,
-                child: Text(
-                  connectedText,
-                  style: footerStyle?.copyWith(
-                    color: (connected) ? Colors.green : Colors.red,
-                  ),
-                  textAlign: TextAlign.left,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  spacing: 10,
+                  children: [
+                    Text(
+                      connectedText,
+                      style: footerStyle?.copyWith(
+                        color: (connected) ? Colors.green : Colors.red,
+                      ),
+                      textAlign: TextAlign.left,
+                    ),
+                    TextButton.icon(
+                      icon: Icon(
+                        (preferences.getBool(PrefKeys.showTabs) ??
+                                Defaults.showTabs)
+                            ? Icons.tab
+                            : Icons.tab_unselected,
+                        color: Colors.white70,
+                        size: 16,
+                      ),
+                      label: Text(
+                        (preferences.getBool(PrefKeys.showTabs) ??
+                                Defaults.showTabs)
+                            ? 'Hide Title Bar'
+                            : 'Show Title Bar',
+                        style: footerStyle,
+                      ),
+                      onPressed: onToggleTabs,
+                    ),
+                  ],
                 ),
               ),
             ],

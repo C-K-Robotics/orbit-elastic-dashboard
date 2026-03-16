@@ -56,6 +56,7 @@ class SettingsDialog extends StatefulWidget {
   final FutureOr<void> Function(String? value)? onGridDPIChanged;
   final void Function()? onOpenAssetsFolderPressed;
   final FutureOr<void> Function(bool value)? onAutoSubmitButtonChanged;
+  final void Function(bool value)? onShowTabsToggle;
 
   const SettingsDialog({
     super.key,
@@ -78,6 +79,7 @@ class SettingsDialog extends StatefulWidget {
     this.onGridDPIChanged,
     this.onOpenAssetsFolderPressed,
     this.onAutoSubmitButtonChanged,
+    this.onShowTabsToggle,
   });
 
   @override

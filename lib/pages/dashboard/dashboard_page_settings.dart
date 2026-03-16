@@ -50,6 +50,7 @@ mixin DashboardPageSettings on DashboardPageViewModel {
         onLogLevelChanged: changeLogLevel,
         onGridDPIChanged: changeGridDPI,
         onAutoSubmitButtonChanged: changeAutoSubmitButton,
+        onShowTabsToggle: toggleTabs,
         onOpenAssetsFolderPressed: () async {
           Uri uri = Uri.file(
             '${path.dirname(Platform.resolvedExecutable)}/data/flutter_assets/assets/',
@@ -94,6 +95,12 @@ mixin DashboardPageSettings on DashboardPageViewModel {
 
   Future<void> toggleGrid(bool value) async {
     await preferences.setBool(PrefKeys.showGrid, value);
+
+    notifyListeners();
+  }
+
+  Future<void> toggleTabs(bool value) async {
+    await preferences.setBool(PrefKeys.showTabs, value);
 
     notifyListeners();
   }

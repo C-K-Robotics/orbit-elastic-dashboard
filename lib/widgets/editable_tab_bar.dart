@@ -219,63 +219,67 @@ class EditableTabBar extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
         // Tab bar
-        ExcludeFocus(
-          child: Container(
-            width: double.infinity,
-            height: 36,
-            color: theme.colorScheme.primaryContainer,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Flexible(
-                  child: ListView.builder(
-                    physics: const BouncingScrollPhysics(),
-                    scrollDirection: Axis.horizontal,
-                    shrinkWrap: true,
-                    itemCount: tabData.length,
-                    itemBuilder: (context, index) =>
-                        _buildTab(index, context, theme),
+        Visibility(
+          visible:
+              preferences.getBool(PrefKeys.showTabs) ?? Defaults.showTabs,
+          child: ExcludeFocus(
+            child: Container(
+              width: double.infinity,
+              height: 36,
+              color: theme.colorScheme.primaryContainer,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Flexible(
+                    child: ListView.builder(
+                      physics: const BouncingScrollPhysics(),
+                      scrollDirection: Axis.horizontal,
+                      shrinkWrap: true,
+                      itemCount: tabData.length,
+                      itemBuilder: (context, index) =>
+                          _buildTab(index, context, theme),
+                    ),
                   ),
-                ),
-                const SizedBox(width: 16),
-                // Tab movement buttons (move left, close, move right)
-                Row(
-                  children: [
-                    if (updateButton != null) updateButton!,
-                    IconButton(
-                      style: endButtonStyle,
-                      onPressed:
-                          !(preferences.getBool(PrefKeys.layoutLocked) ??
-                              Defaults.layoutLocked)
-                          ? () => onTabMoveLeft.call()
-                          : null,
-                      alignment: Alignment.center,
-                      icon: const Icon(Icons.west),
-                    ),
-                    IconButton(
-                      style: endButtonStyle,
-                      onPressed:
-                          !(preferences.getBool(PrefKeys.layoutLocked) ??
-                              Defaults.layoutLocked)
-                          ? () => createTab()
-                          : null,
-                      alignment: Alignment.center,
-                      icon: const Icon(Icons.add),
-                    ),
-                    IconButton(
-                      style: endButtonStyle,
-                      onPressed:
-                          !(preferences.getBool(PrefKeys.layoutLocked) ??
-                              Defaults.layoutLocked)
-                          ? () => onTabMoveRight.call()
-                          : null,
-                      alignment: Alignment.center,
-                      icon: const Icon(Icons.east),
-                    ),
-                    const SizedBox(width: 8),
-                  ],
-                ),
-              ],
+                  const SizedBox(width: 16),
+                  // Tab movement buttons (move left, close, move right)
+                  Row(
+                    children: [
+                      if (updateButton != null) updateButton!,
+                      IconButton(
+                        style: endButtonStyle,
+                        onPressed:
+                            !(preferences.getBool(PrefKeys.layoutLocked) ??
+                                Defaults.layoutLocked)
+                            ? () => onTabMoveLeft.call()
+                            : null,
+                        alignment: Alignment.center,
+                        icon: const Icon(Icons.west),
+                      ),
+                      IconButton(
+                        style: endButtonStyle,
+                        onPressed:
+                            !(preferences.getBool(PrefKeys.layoutLocked) ??
+                                Defaults.layoutLocked)
+                            ? () => createTab()
+                            : null,
+                        alignment: Alignment.center,
+                        icon: const Icon(Icons.add),
+                      ),
+                      IconButton(
+                        style: endButtonStyle,
+                        onPressed:
+                            !(preferences.getBool(PrefKeys.layoutLocked) ??
+                                Defaults.layoutLocked)
+                            ? () => onTabMoveRight.call()
+                            : null,
+                        alignment: Alignment.center,
+                        icon: const Icon(Icons.east),
+                      ),
+                      const SizedBox(width: 8),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),

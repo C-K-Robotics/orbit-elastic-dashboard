@@ -96,8 +96,8 @@ class DashboardPageFooter extends StatelessWidget {
                       label: Text(
                         (preferences.getBool(PrefKeys.showTabs) ??
                                 Defaults.showTabs)
-                            ? 'Hide Title Bar'
-                            : 'Show Title Bar',
+                            ? 'Hide Title & Tab Bars'
+                            : 'Show Title & Tab Bars',
                         style: footerStyle,
                       ),
                       onPressed: onToggleTabs,
